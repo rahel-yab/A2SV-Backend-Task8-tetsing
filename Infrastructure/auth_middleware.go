@@ -1,4 +1,4 @@
-package middleware
+package Infrastructure
 
 import (
 	"fmt"
@@ -7,6 +7,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
+
 func AuthMiddleware(jwtSecret []byte) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
@@ -36,7 +37,6 @@ func AuthMiddleware(jwtSecret []byte) gin.HandlerFunc {
 			return
 		}
 
-		// Store claims in context for handlers
 		claims, ok := token.Claims.(jwt.MapClaims)
 		if !ok {
 			c.JSON(401, gin.H{"error": "Invalid JWT claims"})
@@ -44,7 +44,31 @@ func AuthMiddleware(jwtSecret []byte) gin.HandlerFunc {
 			return
 		}
 		c.Set("claims", claims)
-
 		c.Next()
 	}
+}
+
+func AdminOnly() gin.HandlerFunc {
+    return func(c *gin.Context) {
+        claims, exists := c.Get("claims")
+        if !exists {
+            c.JSON(403, gin.H{"error": "Admin access required (no claims)"})
+            c.Abort()
+            return
+        }
+        jwtClaims, ok := claims.(jwt.MapClaims)
+        if !ok {
+            c.JSON(403, gin.H{"error": "Invalid claims type"})
+            c.Abort()
+            return
+        }
+		 role, ok := jwtClaims["role"].(string)
+        if !ok || role != "admin" {
+            c.JSON(403, gin.H{"error": "Admin access required"})
+            c.Abort()
+            return
+        }
+        c.Next()
+    }
+
 }
