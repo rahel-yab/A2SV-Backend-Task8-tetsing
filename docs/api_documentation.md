@@ -13,9 +13,9 @@ This API is designed using Clean Architecture principles, ensuring separation of
 ## MongoDB Usage
 
 - The API uses MongoDB as its data store.
-- Connection is established in `Infrastructure/mongo.go` via the `ConnectMongo(uri string)` function.
+- Connection is established directly in `Delivery/main.go` using the official MongoDB Go driver.
 - Collections used: `users`, `tasks` in the `task_manager` database.
-- MongoDB URI is read from the `MONGODB_URI` environment variable (defaults to `mongodb://localhost:27017`).
+- MongoDB URI is read from the `MONGODB_URI` environment variable (or from a `.env` file if present, defaults to `mongodb://localhost:27017`).
 
 ## Authorization
 
@@ -45,7 +45,7 @@ This API is designed using Clean Architecture principles, ensuring separation of
 
 ### Register
 
-```
+```json
 POST /register
 {
   "username": "alice",
@@ -56,7 +56,7 @@ POST /register
 
 ### Login
 
-```
+```json
 POST /login
 {
   "email": "alice@example.com",
@@ -66,7 +66,7 @@ POST /login
 
 Response:
 
-```
+```json
 {
   "message": "User logged in successfully",
   "token": "<JWT>",
@@ -76,16 +76,14 @@ Response:
 
 ### Authenticated Request Example
 
-To access any protected endpoint (e.g., tasks), include the JWT in the `Authorization` header:
-
-```
+```json
 GET /tasks
 Authorization: Bearer <JWT>
 ```
 
 ### Add a Task (Authenticated)
 
-```
+```json
 POST /tasks
 Authorization: Bearer <JWT>
 Content-Type: application/json
@@ -93,13 +91,16 @@ Content-Type: application/json
 {
   "id": "1",
   "title": "My Task",
-  ...
+  "description" : "task 1",
+  "due_date": "2024-07-23T12:00:00Z",
+  "status": "pending"
+ 
 }
 ```
 
 ### Promote a User (Admin Only)
 
-```
+```json
 POST /promote
 Authorization: Bearer <JWT-of-admin>
 Content-Type: application/json
