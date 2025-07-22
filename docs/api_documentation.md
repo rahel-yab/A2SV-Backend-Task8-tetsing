@@ -116,6 +116,40 @@ Content-Type: application/json
 - **JWT**: Used for stateless authentication and role-based access control.
 - **Unit Tests**: Provided for usecases to ensure business logic correctness.
 
+## Folder Structure
+
+```
+task-manager/
+├── Delivery/                        # HTTP layer: request handling, controllers, routing
+│   ├── main.go                      # App entrypoint: server setup, dependency wiring
+│   ├── controllers/
+│   │   └── controller.go            # HTTP controllers: handle API requests, call usecases
+│   └── routers/
+│       └── router.go                # Route definitions: Gin router setup
+├── Domain/
+│   └── domain.go                    # Core business entities (User, Task structs)
+├── Infrastructure/                  # External services: JWT, password, auth middleware
+│   ├── auth_middleWare.go           # JWT authentication/authorization middleware
+│   ├── jwt_service.go               # JWT token generation/validation
+│   └── password_service.go          # Password hashing and verification
+├── Repositories/                    # Data access abstraction: interfaces & MongoDB impls
+│   ├── task_repository.go           # Task repository interface & MongoDB implementation
+│   └── user_repository.go           # User repository interface & MongoDB implementation
+└── Usecases/                        # Application business logic (use cases)
+    ├── task_usecases.go             # Task-related business logic
+    └── user_usecases.go             # User-related business logic
+```
+
+**Descriptions:**
+
+- **Delivery/**: Handles HTTP requests and responses (controllers, routing, main entrypoint).
+- **Domain/**: Defines core business models (e.g., User, Task) and logic, independent of frameworks.
+- **Infrastructure/**: Implements external dependencies (JWT, password hashing, authentication).
+- **Repositories/**: Abstracts data access (interfaces and MongoDB implementations for users/tasks).
+- **Usecases/**: Contains business rules and application logic (task/user operations).
+
+This structure follows Clean Architecture, ensuring clear separation of concerns and maintainability.
+
 ## Running the API
 
 1. Set up MongoDB and ensure it is running.
