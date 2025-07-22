@@ -63,6 +63,6 @@ func (r *MongoTaskRepository) UpdateTask(task Domain.Task) error {
 }
 
 func (r *MongoTaskRepository) DeleteTask(id string) error {
-    _, err := r.Collection.DeleteOne(context.Background(), bson.M{"_id": id})
-    return err
+	_, err := r.Collection.DeleteOne(context.Background(), bson.M{"id": id})
+	return err
 }

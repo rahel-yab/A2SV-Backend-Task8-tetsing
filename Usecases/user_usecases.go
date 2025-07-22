@@ -13,8 +13,8 @@ type UserUsecase struct {
 	JWTService      Infrastructure.JWTService
 }
 
-func (u *UserUsecase) PromoteUserToAdmin(identifier string) any {
-	panic("unimplemented")
+func (u *UserUsecase) PromoteUserToAdmin(identifier string) error {
+    return u.Repo.PromoteUserToAdmin(identifier)
 }
 
 func (u *UserUsecase) RegisterUser(username, email, password string) (string, error) {
