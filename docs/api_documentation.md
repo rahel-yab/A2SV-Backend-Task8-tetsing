@@ -44,9 +44,8 @@ This API is designed using Clean Architecture principles, ensuring separation of
 ## Example Usage
 
 ### Register
-
+```POST /register```
 ```json
-POST /register
 {
   "username": "alice",
   "email": "alice@example.com",
@@ -55,9 +54,8 @@ POST /register
 ```
 
 ### Login
-
+```POST /login```
 ```json
-POST /login
 {
   "email": "alice@example.com",
   "password": "password123"
@@ -76,18 +74,18 @@ Response:
 
 ### Authenticated Request Example
 
-```json
+```
 GET /tasks
 Authorization: Bearer <JWT>
 ```
 
 ### Add a Task (Authenticated)
 
-```json
-POST /tasks
+``` POST /tasks
 Authorization: Bearer <JWT>
 Content-Type: application/json
-
+```
+```json
 {
   "id": "1",
   "title": "My Task",
@@ -100,11 +98,11 @@ Content-Type: application/json
 
 ### Promote a User (Admin Only)
 
-```json
-POST /promote
+```POST /promote
 Authorization: Bearer <JWT-of-admin>
 Content-Type: application/json
-
+```
+```json
 {
   "identifier": "alice"
 }
