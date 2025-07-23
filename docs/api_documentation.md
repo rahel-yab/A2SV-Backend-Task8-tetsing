@@ -125,14 +125,14 @@ task-manager/
 │   └── routers/
 │       └── router.go                # Route definitions: Gin router setup
 ├── Domain/
-│   └── domain.go                    # Core business entities (User, Task structs)
+│   └── domain.go                    # Core business entities (User, Task structs, interfaces)
 ├── Infrastructure/                  # External services: JWT, password, auth middleware
 │   ├── auth_middleWare.go           # JWT authentication/authorization middleware
 │   ├── jwt_service.go               # JWT token generation/validation
 │   └── password_service.go          # Password hashing and verification
 ├── Repositories/                    # Data access abstraction: interfaces & MongoDB impls
-│   ├── task_repository.go           # Task repository interface & MongoDB implementation
-│   └── user_repository.go           # User repository interface & MongoDB implementation
+│   ├── task_repository.go           # MongoDB implementation of task interface
+│   └── user_repository.go           # MongoDB implementation of user interface
 └── Usecases/                        # Application business logic (use cases)
     ├── task_usecases.go             # Task-related business logic
     └── user_usecases.go             # User-related business logic
@@ -154,6 +154,6 @@ This structure follows Clean Architecture, ensuring clear separation of concerns
 2. Set the `MONGODB_URI` environment variable if not using the default.
 3. Run the API:
    ```
-   go run task_manager/Delivery/main.go
+   go run Delivery/main.go
    ```
 4. Use Postman or similar tools to interact with the endpoints.
