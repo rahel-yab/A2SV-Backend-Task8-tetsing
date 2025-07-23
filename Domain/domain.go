@@ -3,8 +3,9 @@ package Domain
 import (
 	"time"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"context"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type User struct {
@@ -24,20 +25,19 @@ type Task struct {
 }
 
 type TaskRepository interface {
-	GetAllTasks() ([]Task, error)
-	GetTaskByID(id string) (*Task, error)
-	AddTask(task Task) error
-	UpdateTask(task Task) error
-	DeleteTask(id string) error
-	FetchByTaskID(ctx context.Context, taskID primitive.ObjectID) (Task, error)
+	AddTask(ctx context.Context, task *Task) error
+	GetAllTasks(ctx context.Context) ([]Task, error)
+	GetTaskByID(ctx context.Context, id string) (*Task, error)
+	UpdateTask(ctx context.Context, task *Task) error
+	DeleteTask(ctx context.Context, id string) error
 }
 
 type UserRepository interface {
-	AddUser(user User) error
-	GetUserByEmail(email string) (*User, error)
-	GetUserByUsername(username string) (*User, error)
-	IsUsersCollectionEmpty() (bool, error)
-	UserExistsByEmail(email string) (bool, error)
-	UserExistsByUsername(username string) (bool, error)
-	PromoteUserToAdmin(identifier string) error
+	AddUser(ctx context.Context, user *User) error
+	GetUserByEmail(ctx context.Context, email string) (*User, error)
+	GetUserByUsername(ctx context.Context, username string) (*User, error)
+	IsUsersCollectionEmpty(ctx context.Context) (bool, error)
+	UserExistsByEmail(ctx context.Context, email string) (bool, error)
+	UserExistsByUsername(ctx context.Context, username string) (bool, error)
+	PromoteUserToAdmin(ctx context.Context, identifier string) error
 }

@@ -1,32 +1,51 @@
 package Usecases
 
 import (
+	"context"
 	"task_manager/Domain"
-	"task_manager/Repositories"
+	"time"
 )
 
 type TaskUsecase struct {
-	Repo Repositories.TaskRepository
+	taskRepository Domain.TaskRepository
+	contextTimeout time.Duration
 }
 
-func (u *TaskUsecase) GetAllTasks() ([]Domain.Task, error) {
-	return u.Repo.GetAllTasks()
+func NewTaskUsecase(taskRepository Domain.TaskRepository, timeout time.Duration) *TaskUsecase {
+	return &TaskUsecase{
+		taskRepository: taskRepository,
+		contextTimeout: timeout,
+	}
 }
 
-func (u *TaskUsecase) GetTaskByID(id string) (*Domain.Task, error) {
-	return u.Repo.GetTaskByID(id)
+func (tu *TaskUsecase) Create(c context.Context, task *Domain.Task) error {
+	ctx, cancel := context.WithTimeout(c, tu.contextTimeout)
+	defer cancel()
+	return tu.taskRepository.AddTask(ctx, task)
 }
 
-func (u *TaskUsecase) AddTask(task Domain.Task) error {
-	return u.Repo.AddTask(task)
+func (tu *TaskUsecase) GetAllTasks(c context.Context) ([]Domain.Task, error) {
+	ctx, cancel := context.WithTimeout(c, tu.contextTimeout)
+	defer cancel()
+	return tu.taskRepository.GetAllTasks(ctx)
 }
 
-func (u *TaskUsecase) UpdateTask(task Domain.Task) error {
-	return u.Repo.UpdateTask(task)
+func (tu *TaskUsecase) GetTaskByID(c context.Context, id string) (*Domain.Task, error) {
+	ctx, cancel := context.WithTimeout(c, tu.contextTimeout)
+	defer cancel()
+	return tu.taskRepository.GetTaskByID(ctx, id)
 }
 
-func (u *TaskUsecase) DeleteTask(id string) error {
-	return u.Repo.DeleteTask(id)
+func (tu *TaskUsecase) UpdateTask(c context.Context, task *Domain.Task) error {
+	ctx, cancel := context.WithTimeout(c, tu.contextTimeout)
+	defer cancel()
+	return tu.taskRepository.UpdateTask(ctx, task)
+}
+
+func (tu *TaskUsecase) DeleteTask(c context.Context, id string) error {
+	ctx, cancel := context.WithTimeout(c, tu.contextTimeout)
+	defer cancel()
+	return tu.taskRepository.DeleteTask(ctx, id)
 }
 
 

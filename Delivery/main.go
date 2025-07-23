@@ -1,4 +1,4 @@
-package Delivery
+package main
 
 import (
 	"context"
@@ -37,8 +37,8 @@ func main() {
 	db := client.Database("task_manager")
 
 	// Repositories
-	userRepo := &Repositories.MongoUserRepository{Collection: db.Collection("users")}
-	taskRepo := &Repositories.MongoTaskRepository{Collection: db.Collection("tasks")}
+	userRepo := Repositories.NewUserRepository(db.Collection("users"))
+	taskRepo := Repositories.NewTaskRepository(db.Collection("tasks"))
 
 	// Services
 	passwordService := Infrastructure.NewPasswordService()
@@ -46,18 +46,12 @@ func main() {
 	jwtService := Infrastructure.NewJWTService(string(jwtSecret))
 
 	// Usecases
-	userUsecase := &Usecases.UserUsecase{
-		Repo:            userRepo,
-		PasswordService: passwordService,
-		JWTService:      jwtService,
-	}
-	taskUsecase := &Usecases.TaskUsecase{
-		Repo: taskRepo,
-	}
+	userUsecase := Usecases.NewUserUsecase(userRepo, passwordService, jwtService, 5*time.Second)
+	taskUsecase := Usecases.NewTaskUsecase(taskRepo, 5*time.Second)
 
 	// Controllers
-	userController := &Controllers.UserController{UserUsecase: userUsecase}
-	taskController := &Controllers.TaskController{TaskUsecase: taskUsecase}
+	userController := Controllers.NewUserController(userUsecase)
+	taskController := Controllers.NewTaskController(taskUsecase)
 
 	// Router
 	router := routers.SetupRouter(userController, taskController, jwtSecret)
