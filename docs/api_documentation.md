@@ -113,7 +113,6 @@ Content-Type: application/json
 - **Clean Architecture**: Each layer is decoupled and only depends on abstractions.
 - **MongoDB**: Used for persistence, with repository interfaces allowing for easy substitution.
 - **JWT**: Used for stateless authentication and role-based access control.
-- **Unit Tests**: Provided for usecases to ensure business logic correctness.
 
 ## Folder Structure
 
