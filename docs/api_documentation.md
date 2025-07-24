@@ -136,9 +136,9 @@ task-manager/
 │   ├── jwt_service.go               # JWT token generation/validation
 │   └── password_service.go          # Password hashing and verification
 ├── Repositories/                    # Data access abstraction: interfaces & MongoDB impls
-│   ├── task_repository.go           # MongoDB implementation of task interface
-│   └── user_repository.go           # MongoDB implementation of user interface
-└── Usecases/                        # Application business logic (use cases)
+│   ├── task_repository.go           # Task repository interface & MongoDB implementation
+│   └── user_repository.go           # User repository interface & MongoDB implementation
+└── Usecases/                        # Application business logic (orchestrates domain logic and rules)
     ├── task_usecases.go             # Task-related business logic
     └── user_usecases.go             # User-related business logic
 ```
@@ -146,10 +146,10 @@ task-manager/
 **Descriptions:**
 
 - **Delivery/**: Handles HTTP requests and responses (controllers, routing, main entrypoint).
-- **Domain/**: Defines core business models (e.g., User, Task) and logic, independent of frameworks.
+- **Domain/**: Defines core business models and interfaces (e.g., User, Task, repository/service interfaces). Contains core domain logic.
 - **Infrastructure/**: Implements external dependencies (JWT, password hashing, authentication).
-- **Repositories/**: Abstracts data access (interfaces and MongoDB implementations for users/tasks).
-- **Usecases/**: Contains business rules and application logic (task/user operations).
+- **Repositories/**: Implements data access, using domain interfaces. No business logic.
+- **Usecases/**: Contains application business logic—coordinates domain logic, enforces application rules, and orchestrates interactions between domain and repositories.
 
 This structure follows Clean Architecture, ensuring clear separation of concerns and maintainability.
 
