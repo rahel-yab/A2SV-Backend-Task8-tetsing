@@ -4,12 +4,13 @@ import (
 	"context"
 	"log"
 	"os"
+	"time"
+
 	Controllers "task_manager/Delivery/Controllers"
 	routers "task_manager/Delivery/routers"
 	Infrastructure "task_manager/Infrastructure"
 	Repositories "task_manager/Repositories"
 	Usecases "task_manager/Usecases"
-	"time"
 
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -17,13 +18,11 @@ import (
 )
 
 func main() {
-	// Load environment variables from .env if present
 	_ = godotenv.Load()
 
-	// MongoDB connection
 	uri := os.Getenv("MONGODB_URI")
 	if uri == "" {
-		uri = "mongodb://localhost:27017" // default fallback
+		uri = "mongodb://localhost:27017"
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -34,15 +33,17 @@ func main() {
 	if err := client.Ping(ctx, nil); err != nil {
 		log.Fatalf("Failed to ping MongoDB: %v", err)
 	}
-	db := client.Database("task_manager")
 
-	// Repositories
-	userRepo := Repositories.NewUserRepository(db.Collection("users"))
-	taskRepo := Repositories.NewTaskRepository(db.Collection("tasks"))
+	// Repositories (pass only client)
+	userRepo := Repositories.NewUserRepository(client)
+	taskRepo := Repositories.NewTaskRepository(client)
 
 	// Services
 	passwordService := Infrastructure.NewPasswordService()
-	jwtSecret := []byte("your_jwt_secret") // TODO: move to config/env
+	 jwtSecret := []byte(os.Getenv("JWT_SECRET"))
+   if len(jwtSecret) == 0 {
+       log.Fatal("JWT_SECRET is not set in environment")
+   }
 	jwtService := Infrastructure.NewJWTService(string(jwtSecret))
 
 	// Usecases

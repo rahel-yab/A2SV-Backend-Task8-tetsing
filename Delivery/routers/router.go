@@ -23,7 +23,7 @@ func SetupRouter(userController *Controllers.UserController, taskController *Con
 	router.POST("/login", userController.LoginUser)
 
 	// Protected route for promoting users
-	router.POST("/promote", Infrastructure.AuthMiddleware(jwtSecret), userController.PromoteUser)
+	router.POST("/promote", Infrastructure.AuthMiddleware(jwtSecret), Infrastructure.AdminOnly(), userController.PromoteUser)
 
 	return router
 }

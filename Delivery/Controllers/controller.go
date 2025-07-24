@@ -4,25 +4,78 @@ import (
 	"net/http"
 	"task_manager/Domain"
 	"task_manager/Usecases"
+	"time"
+
 	"github.com/gin-gonic/gin"
 )
 
-// UserController handles user-related HTTP requests
+type UserDTO struct {
+	ID       string `json:"id"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password,omitempty"`
+	Role     string `json:"role"`
+}
+
+func toDomainUser(dto *UserDTO) *Domain.User {
+	return &Domain.User{
+		ID:       dto.ID,
+		Username: dto.Username,
+		Email:    dto.Email,
+		Password: dto.Password,
+		Role:     dto.Role,
+	}
+}
+
+func toUserDTO(user *Domain.User) *UserDTO {
+	return &UserDTO{
+		ID:       user.ID,
+		Username: user.Username,
+		Email:    user.Email,
+		Role:     user.Role,
+	}
+}
+
+type TaskDTO struct {
+	ID          string    `json:"id"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	DueDate     time.Time `json:"due_date"`
+	Status      string    `json:"status"`
+}
+
+func toDomainTask(dto *TaskDTO) *Domain.Task {
+	return &Domain.Task{
+		ID:          dto.ID,
+		Title:       dto.Title,
+		Description: dto.Description,
+		DueDate:     dto.DueDate,
+		Status:      dto.Status,
+	}
+}
+
+func toTaskDTO(task *Domain.Task) *TaskDTO {
+	return &TaskDTO{
+		ID:          task.ID,
+		Title:       task.Title,
+		Description: task.Description,
+		DueDate:     task.DueDate,
+		Status:      task.Status,
+	}
+}
+
+// --- UserController ---
+
 type UserController struct {
 	userUsecase *Usecases.UserUsecase
 }
 
-// NewUserController creates a new UserController
 func NewUserController(userUsecase *Usecases.UserUsecase) *UserController {
 	return &UserController{userUsecase: userUsecase}
 }
 
 func (ctrl *UserController) RegisterUser(c *gin.Context) {
-	var req struct {
-		Username string `json:"username"`
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
+	var req UserDTO
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
@@ -36,11 +89,7 @@ func (ctrl *UserController) RegisterUser(c *gin.Context) {
 }
 
 func (ctrl *UserController) LoginUser(c *gin.Context) {
-	var req struct {
-		Username string `json:"username"`
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
+	var req UserDTO
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
@@ -73,12 +122,12 @@ func (ctrl *UserController) PromoteUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "User promoted to admin"})
 }
 
-// TaskController handles task-related HTTP requests
+// --- TaskController ---
+
 type TaskController struct {
 	taskUsecase *Usecases.TaskUsecase
 }
 
-// NewTaskController creates a new TaskController
 func NewTaskController(taskUsecase *Usecases.TaskUsecase) *TaskController {
 	return &TaskController{taskUsecase: taskUsecase}
 }
@@ -89,7 +138,11 @@ func (ctrl *TaskController) GetTasks(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, tasks)
+	var dtos []TaskDTO
+	for _, t := range tasks {
+		dtos = append(dtos, *toTaskDTO(&t))
+	}
+	c.JSON(http.StatusOK, dtos)
 }
 
 func (ctrl *TaskController) GetTask(c *gin.Context) {
@@ -99,16 +152,17 @@ func (ctrl *TaskController) GetTask(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"message": "task not found"})
 		return
 	}
-	c.JSON(http.StatusOK, task)
+	c.JSON(http.StatusOK, toTaskDTO(task))
 }
 
 func (ctrl *TaskController) AddTask(c *gin.Context) {
-	var newTask Domain.Task
-	if err := c.ShouldBindJSON(&newTask); err != nil {
+	var dto TaskDTO
+	if err := c.ShouldBindJSON(&dto); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if err := ctrl.taskUsecase.Create(c.Request.Context(), &newTask); err != nil {
+	task := toDomainTask(&dto)
+	if err := ctrl.taskUsecase.Create(c.Request.Context(), task); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -116,12 +170,13 @@ func (ctrl *TaskController) AddTask(c *gin.Context) {
 }
 
 func (ctrl *TaskController) UpdateTask(c *gin.Context) {
-	var updatedTask Domain.Task
-	if err := c.ShouldBindJSON(&updatedTask); err != nil {
+	var dto TaskDTO
+	if err := c.ShouldBindJSON(&dto); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if err := ctrl.taskUsecase.UpdateTask(c.Request.Context(), &updatedTask); err != nil {
+	task := toDomainTask(&dto)
+	if err := ctrl.taskUsecase.UpdateTask(c.Request.Context(), task); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

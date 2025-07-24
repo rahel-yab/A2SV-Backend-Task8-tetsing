@@ -5,40 +5,70 @@ import (
 	"task_manager/Domain"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
+
+// UserDAO is the MongoDB representation of a user
+type UserDAO struct {
+	ID       primitive.ObjectID `bson:"_id,omitempty"`
+	Username string `bson:"username"`
+	Email    string `bson:"email"`
+	Password string `bson:"password"`
+	Role     string `bson:"role"`
+}
+
+func userToDAO(user *Domain.User) *UserDAO {
+	return &UserDAO{
+		Username: user.Username,
+		Email:    user.Email,
+		Password: user.Password,
+		Role:     user.Role,
+	}
+}
+
+func daoToUser(dao *UserDAO) *Domain.User {
+	return &Domain.User{
+		Username: dao.Username,
+		Email:    dao.Email,
+		Password: dao.Password,
+		Role:     dao.Role,
+	}
+}
 
 type mongoUserRepository struct {
 	collection *mongo.Collection
 }
 
-func NewUserRepository(collection *mongo.Collection) Domain.UserRepository {
+func NewUserRepository(client *mongo.Client) Domain.UserRepository {
+	db := client.Database("task_manager")
 	return &mongoUserRepository{
-		collection: collection,
+		collection: db.Collection("users"),
 	}
 }
 
 func (r *mongoUserRepository) AddUser(ctx context.Context, user *Domain.User) error {
-	_, err := r.collection.InsertOne(ctx, user)
-	return err
+    dao := userToDAO(user)
+    _, err := r.collection.InsertOne(ctx, dao)
+    return err
 }
 
 func (r *mongoUserRepository) GetUserByEmail(ctx context.Context, email string) (*Domain.User, error) {
-	var user Domain.User
-	err := r.collection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
+	var dao UserDAO
+	err := r.collection.FindOne(ctx, bson.M{"email": email}).Decode(&dao)
 	if err != nil {
 		return nil, err
 	}
-	return &user, nil
+	return daoToUser(&dao), nil
 }
 
 func (r *mongoUserRepository) GetUserByUsername(ctx context.Context, username string) (*Domain.User, error) {
-	var user Domain.User
-	err := r.collection.FindOne(ctx, bson.M{"username": username}).Decode(&user)
+	var dao UserDAO
+	err := r.collection.FindOne(ctx, bson.M{"username": username}).Decode(&dao)
 	if err != nil {
 		return nil, err
 	}
-	return &user, nil
+	return daoToUser(&dao), nil
 }
 
 func (r *mongoUserRepository) IsUsersCollectionEmpty(ctx context.Context) (bool, error) {

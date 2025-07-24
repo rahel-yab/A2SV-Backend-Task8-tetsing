@@ -4,18 +4,17 @@ import (
 	"context"
 	"errors"
 	"task_manager/Domain"
-	"task_manager/Infrastructure"
 	"time"
 )
 
 type UserUsecase struct {
 	userRepository Domain.UserRepository
-	passwordService Infrastructure.PasswordService
-	jwtService Infrastructure.JWTService
+	passwordService Domain.PasswordService
+	jwtService Domain.JWTService
 	contextTimeout time.Duration
 }
 
-func NewUserUsecase(userRepository Domain.UserRepository, passwordService Infrastructure.PasswordService, jwtService Infrastructure.JWTService, timeout time.Duration) *UserUsecase {
+func NewUserUsecase(userRepository Domain.UserRepository, passwordService Domain.PasswordService, jwtService Domain.JWTService, timeout time.Duration) *UserUsecase {
 	return &UserUsecase{
 		userRepository: userRepository,
 		passwordService: passwordService,

@@ -4,24 +4,22 @@ import (
 	"time"
 
 	"context"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type User struct {
-	ID       primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
-	Username string `json:"username" bson:"username"`
-	Email    string `json:"email" bson:"email"`
-	Password string `json:"password" bson:"password"`
-	Role     string `json:"role" bson:"role"`
+	ID       string
+	Username string
+	Email    string
+	Password string
+	Role     string
 }
 
 type Task struct {
-	ID          string `json:"id" bson:"_id"`
-	Title       string `json:"title" bson:"title"`
-	Description string `json:"description" bson:"description"`
-	DueDate     time.Time `json:"due_date" bson:"due_date"`
-	Status      string `json:"status" bson:"status"`
+	ID          string
+	Title       string
+	Description string
+	DueDate     time.Time
+	Status      string
 }
 
 type TaskRepository interface {
@@ -40,4 +38,13 @@ type UserRepository interface {
 	UserExistsByEmail(ctx context.Context, email string) (bool, error)
 	UserExistsByUsername(ctx context.Context, username string) (bool, error)
 	PromoteUserToAdmin(ctx context.Context, identifier string) error
+}
+
+type PasswordService interface {
+	HashPassword(password string) (string, error)
+	CheckPasswordHash(password, hash string) bool
+}
+
+type JWTService interface {
+	GenerateToken(user *User) (string, error)
 }
