@@ -119,6 +119,23 @@ Content-Type: application/json
 - **MongoDB**: Used for persistence, with repository interfaces allowing for easy substitution.
 - **JWT**: Used for stateless authentication and role-based access control.
 
+## Architecture Patterns
+
+### DAO vs DTO Pattern
+
+- **DAO (Data Access Object)**: Used in the Repository layer for database serialization/deserialization with `bson` tags
+  - `TaskDAO` and `UserDAO` in repositories for MongoDB operations
+- **DTO (Data Transfer Object)**: Used in the Controller layer for HTTP request/response serialization with `json` tags
+  - `TaskDTO` and `UserDTO` in controllers for API communication
+
+### Clean Architecture Layers
+
+- **Domain**: Pure business logic, no framework dependencies
+- **Usecases**: Application business logic, orchestrates domain operations
+- **Repositories**: Data access using DAOs, implements domain interfaces
+- **Controllers**: HTTP handling using DTOs, calls usecases
+- **Infrastructure**: External services (JWT, password hashing)
+
 ## Folder Structure
 
 ```

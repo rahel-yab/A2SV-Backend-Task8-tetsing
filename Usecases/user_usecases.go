@@ -8,13 +8,13 @@ import (
 )
 
 type UserUsecase struct {
-	userRepository Domain.UserRepository
-	passwordService Domain.PasswordService
-	jwtService Domain.JWTService
+	userRepository Domain.IUserRepository
+	passwordService Domain.IPasswordService
+	jwtService Domain.IJWTService
 	contextTimeout time.Duration
 }
 
-func NewUserUsecase(userRepository Domain.UserRepository, passwordService Domain.PasswordService, jwtService Domain.JWTService, timeout time.Duration) *UserUsecase {
+func NewUserUsecase(userRepository Domain.IUserRepository, passwordService Domain.IPasswordService, jwtService Domain.IJWTService, timeout time.Duration) *UserUsecase {
 	return &UserUsecase{
 		userRepository: userRepository,
 		passwordService: passwordService,

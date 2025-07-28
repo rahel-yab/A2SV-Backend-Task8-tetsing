@@ -9,7 +9,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-// UserDAO is the MongoDB representation of a user
+// UserDAO (Data Access Object) is the MongoDB representation of a user
+// Used for database serialization/deserialization with bson tags
 type UserDAO struct {
 	ID       primitive.ObjectID `bson:"_id,omitempty"`
 	Username string `bson:"username"`
@@ -40,7 +41,7 @@ type mongoUserRepository struct {
 	collection *mongo.Collection
 }
 
-func NewUserRepository(client *mongo.Client) Domain.UserRepository {
+func NewUserRepository(client *mongo.Client) Domain.IUserRepository {
 	db := client.Database("task_manager")
 	return &mongoUserRepository{
 		collection: db.Collection("users"),

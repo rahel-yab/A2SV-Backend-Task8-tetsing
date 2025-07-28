@@ -9,7 +9,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-// TaskDAO is the MongoDB representation of a task
+// TaskDAO (Data Access Object) is the MongoDB representation of a task
+// Used for database serialization/deserialization with bson tags
 type TaskDAO struct {
 	ID          string    `bson:"_id"`
 	Title       string    `bson:"title"`
@@ -42,7 +43,7 @@ type mongoTaskRepository struct {
 	collection *mongo.Collection
 }
 
-func NewTaskRepository(client *mongo.Client) Domain.TaskRepository {
+func NewTaskRepository(client *mongo.Client) Domain.ITaskRepository {
 	db := client.Database("task_manager")
 	return &mongoTaskRepository{
 		collection: db.Collection("tasks"),

@@ -1,15 +1,14 @@
 package Infrastructure
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"task_manager/Domain"
 
-type PasswordService interface {
-	HashPassword(password string) (string, error)
-	CheckPasswordHash(password, hash string) bool
-}
+	"golang.org/x/crypto/bcrypt"
+)
 
 type passwordService struct{}
 
-func NewPasswordService() PasswordService {
+func NewPasswordService() Domain.IPasswordService {
 	return &passwordService{}
 }
 

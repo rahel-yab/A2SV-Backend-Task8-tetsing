@@ -7,22 +7,22 @@ import (
 )
 
 type User struct {
-	ID       string
-	Username string
+	ID       string 
+	Username string 
 	Email    string
-	Password string
-	Role     string
+	Password string 
+	Role     string 
 }
 
 type Task struct {
-	ID          string
-	Title       string
-	Description string
-	DueDate     time.Time
-	Status      string
+	ID          string    
+	Title       string    
+	Description string    
+	DueDate     time.Time 
+	Status      string    
 }
 
-type TaskRepository interface {
+type ITaskRepository interface {
 	AddTask(ctx context.Context, task *Task) error
 	GetAllTasks(ctx context.Context) ([]Task, error)
 	GetTaskByID(ctx context.Context, id string) (*Task, error)
@@ -30,7 +30,7 @@ type TaskRepository interface {
 	DeleteTask(ctx context.Context, id string) error
 }
 
-type UserRepository interface {
+type IUserRepository interface {
 	AddUser(ctx context.Context, user *User) error
 	GetUserByEmail(ctx context.Context, email string) (*User, error)
 	GetUserByUsername(ctx context.Context, username string) (*User, error)
@@ -40,11 +40,11 @@ type UserRepository interface {
 	PromoteUserToAdmin(ctx context.Context, identifier string) error
 }
 
-type PasswordService interface {
+type IPasswordService interface {
 	HashPassword(password string) (string, error)
 	CheckPasswordHash(password, hash string) bool
 }
 
-type JWTService interface {
+type IJWTService interface {
 	GenerateToken(user *User) (string, error)
 }

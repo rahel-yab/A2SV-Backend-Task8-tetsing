@@ -7,11 +7,11 @@ import (
 )
 
 type TaskUsecase struct {
-	taskRepository Domain.TaskRepository
+	taskRepository Domain.ITaskRepository
 	contextTimeout time.Duration
 }
 
-func NewTaskUsecase(taskRepository Domain.TaskRepository, timeout time.Duration) *TaskUsecase {
+func NewTaskUsecase(taskRepository Domain.ITaskRepository, timeout time.Duration) *TaskUsecase {
 	return &TaskUsecase{
 		taskRepository: taskRepository,
 		contextTimeout: timeout,
