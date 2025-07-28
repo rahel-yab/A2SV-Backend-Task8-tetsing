@@ -3,23 +3,23 @@ package Usecases
 import (
 	"context"
 	"errors"
-	"task_manager/Domain"
+	"task_manager/domain"
 	"time"
 )
 
 type TaskUsecase struct {
-	taskRepository Domain.ITaskRepository
+	taskRepository domain.ITaskRepository
 	contextTimeout time.Duration
 }
 
-func NewTaskUsecase(taskRepository Domain.ITaskRepository, timeout time.Duration) *TaskUsecase {
+func NewTaskUsecase(taskRepository domain.ITaskRepository, timeout time.Duration) *TaskUsecase {
 	return &TaskUsecase{
 		taskRepository: taskRepository,
 		contextTimeout: timeout,
 	}
 }
 
-func (tu *TaskUsecase) Create(c context.Context, task *Domain.Task) error {
+func (tu *TaskUsecase) Create(c context.Context, task *domain.Task) error {
 	// Validate task data
 	if task == nil {
 		return errors.New("task cannot be nil")
@@ -55,13 +55,13 @@ func (tu *TaskUsecase) Create(c context.Context, task *Domain.Task) error {
 	return tu.taskRepository.AddTask(ctx, task)
 }
 
-func (tu *TaskUsecase) GetAllTasks(c context.Context) ([]Domain.Task, error) {
+func (tu *TaskUsecase) GetAllTasks(c context.Context) ([]domain.Task, error) {
 	ctx, cancel := context.WithTimeout(c, tu.contextTimeout)
 	defer cancel()
 	return tu.taskRepository.GetAllTasks(ctx)
 }
 
-func (tu *TaskUsecase) GetTaskByID(c context.Context, id string) (*Domain.Task, error) {
+func (tu *TaskUsecase) GetTaskByID(c context.Context, id string) (*domain.Task, error) {
 	if id == "" {
 		return nil, errors.New("task ID is required")
 	}
@@ -71,7 +71,7 @@ func (tu *TaskUsecase) GetTaskByID(c context.Context, id string) (*Domain.Task, 
 	return tu.taskRepository.GetTaskByID(ctx, id)
 }
 
-func (tu *TaskUsecase) UpdateTask(c context.Context, task *Domain.Task) error {
+func (tu *TaskUsecase) UpdateTask(c context.Context, task *domain.Task) error {
 	// Validate task data
 	if task == nil {
 		return errors.New("task cannot be nil")

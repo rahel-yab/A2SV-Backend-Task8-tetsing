@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"task_manager/Domain"
+	"task_manager/domain"
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
@@ -17,25 +17,25 @@ type MockUserRepository struct {
 	mock.Mock
 }
 
-func (m *MockUserRepository) AddUser(ctx context.Context, user *Domain.User) error {
+func (m *MockUserRepository) AddUser(ctx context.Context, user *domain.User) error {
 	args := m.Called(ctx, user)
 	return args.Error(0)
 }
 
-func (m *MockUserRepository) GetUserByEmail(ctx context.Context, email string) (*Domain.User, error) {
+func (m *MockUserRepository) GetUserByEmail(ctx context.Context, email string) (*domain.User, error) {
 	args := m.Called(ctx, email)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).(*Domain.User), args.Error(1)
+	return args.Get(0).(*domain.User), args.Error(1)
 }
 
-func (m *MockUserRepository) GetUserByUsername(ctx context.Context, username string) (*Domain.User, error) {
+func (m *MockUserRepository) GetUserByUsername(ctx context.Context, username string) (*domain.User, error) {
 	args := m.Called(ctx, username)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).(*Domain.User), args.Error(1)
+	return args.Get(0).(*domain.User), args.Error(1)
 }
 
 func (m *MockUserRepository) IsUsersCollectionEmpty(ctx context.Context) (bool, error) {
@@ -76,7 +76,7 @@ type MockJWTService struct {
 	mock.Mock
 }
 
-func (m *MockJWTService) GenerateToken(user *Domain.User) (string, error) {
+func (m *MockJWTService) GenerateToken(user *domain.User) (string, error) {
 	args := m.Called(user)
 	return args.String(0), args.Error(1)
 }
@@ -124,7 +124,7 @@ func (suite *UserUsecaseTestSuite) TestRegisterUserSuite() {
 		suite.mockUserRepo.On("UserExistsByUsername", mock.AnythingOfType("*context.timerCtx"), username).Return(false, nil)
 		suite.mockUserRepo.On("IsUsersCollectionEmpty", mock.AnythingOfType("*context.timerCtx")).Return(true, nil)
 		suite.mockPasswordService.On("HashPassword", password).Return(hashedPassword, nil)
-		suite.mockUserRepo.On("AddUser", mock.AnythingOfType("*context.timerCtx"), mock.AnythingOfType("*Domain.User")).Return(nil)
+		suite.mockUserRepo.On("AddUser", mock.AnythingOfType("*context.timerCtx"), mock.AnythingOfType("*domain.User")).Return(nil)
 
 		role, err := suite.usecase.RegisterUser(suite.ctx, username, email, password)
 
@@ -149,7 +149,7 @@ func (suite *UserUsecaseTestSuite) TestRegisterUserSuite() {
 		mockUserRepo.On("UserExistsByUsername", mock.AnythingOfType("*context.timerCtx"), username).Return(false, nil)
 		mockUserRepo.On("IsUsersCollectionEmpty", mock.AnythingOfType("*context.timerCtx")).Return(false, nil)
 		mockPasswordService.On("HashPassword", password).Return(hashedPassword, nil)
-		mockUserRepo.On("AddUser", mock.AnythingOfType("*context.timerCtx"), mock.AnythingOfType("*Domain.User")).Return(nil)
+		mockUserRepo.On("AddUser", mock.AnythingOfType("*context.timerCtx"), mock.AnythingOfType("*domain.User")).Return(nil)
 
 		role, err := usecase.RegisterUser(suite.ctx, username, email, password)
 
@@ -285,7 +285,7 @@ func (suite *UserUsecaseTestSuite) TestLoginUserSuite() {
 		password := "password123"
 		token := "jwt_token"
 
-		user := &Domain.User{
+		user := &domain.User{
 			ID:       "user123",
 			Username: "testuser",
 			Email:    "test@example.com",
@@ -309,7 +309,7 @@ func (suite *UserUsecaseTestSuite) TestLoginUserSuite() {
 		password := "password123"
 		token := "jwt_token"
 
-		user := &Domain.User{
+		user := &domain.User{
 			ID:       "user123",
 			Username: "testuser",
 			Email:    "test@example.com",
@@ -372,7 +372,7 @@ func (suite *UserUsecaseTestSuite) TestLoginUserSuite() {
 		usernameOrEmail := "test@example.com"
 		password := "wrongpassword"
 
-		user := &Domain.User{
+		user := &domain.User{
 			ID:       "user123",
 			Username: "testuser",
 			Email:    "test@example.com",
@@ -401,7 +401,7 @@ func (suite *UserUsecaseTestSuite) TestLoginUserSuite() {
 		usernameOrEmail := "test@example.com"
 		password := "password123"
 
-		user := &Domain.User{
+		user := &domain.User{
 			ID:       "user123",
 			Username: "testuser",
 			Email:    "test@example.com",

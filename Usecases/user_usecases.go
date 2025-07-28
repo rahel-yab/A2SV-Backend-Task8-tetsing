@@ -4,18 +4,18 @@ import (
 	"context"
 	"errors"
 	"strings"
-	"task_manager/Domain"
+	"task_manager/domain"
 	"time"
 )
 
 type UserUsecase struct {
-	userRepository Domain.IUserRepository
-	passwordService Domain.IPasswordService
-	jwtService Domain.IJWTService
+	userRepository domain.IUserRepository
+	passwordService domain.IPasswordService
+	jwtService domain.IJWTService
 	contextTimeout time.Duration
 }
 
-func NewUserUsecase(userRepository Domain.IUserRepository, passwordService Domain.IPasswordService, jwtService Domain.IJWTService, timeout time.Duration) *UserUsecase {
+func NewUserUsecase(userRepository domain.IUserRepository, passwordService domain.IPasswordService, jwtService domain.IJWTService, timeout time.Duration) *UserUsecase {
 	return &UserUsecase{
 		userRepository: userRepository,
 		passwordService: passwordService,
@@ -61,7 +61,7 @@ func (uu *UserUsecase) RegisterUser(ctx context.Context, username, email, passwo
 	if err != nil {
 		return "", err
 	}
-	user := &Domain.User{
+	user := &domain.User{
 		Username: username,
 		Email:    email,
 		Password: hashed,
@@ -84,7 +84,7 @@ func (uu *UserUsecase) LoginUser(ctx context.Context, usernameOrEmail, password 
 	
 	c, cancel := context.WithTimeout(ctx, uu.contextTimeout)
 	defer cancel()
-	var user *Domain.User
+	var user *domain.User
 	var err error
 	if user, err = uu.userRepository.GetUserByEmail(c, usernameOrEmail); err != nil || user == nil {
 		user, err = uu.userRepository.GetUserByUsername(c, usernameOrEmail)

@@ -1,8 +1,8 @@
-package Infrastructure
+package infrastructure
 
 import (
 	"fmt"
-	"task_manager/Domain"
+	"task_manager/domain"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -12,11 +12,11 @@ type jwtService struct {
 	secretKey []byte
 }
 
-func NewJWTService(secret string) Domain.IJWTService {
+func NewJWTService(secret string) domain.IJWTService {
 	return &jwtService{secretKey: []byte(secret)}
 }
 
-func (j *jwtService) GenerateToken(user *Domain.User) (string, error) {
+func (j *jwtService) GenerateToken(user *domain.User) (string, error) {
 	if user == nil {
 		return "", fmt.Errorf("user cannot be nil")
 	}

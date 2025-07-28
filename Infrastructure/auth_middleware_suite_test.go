@@ -1,4 +1,4 @@
-package Infrastructure
+package infrastructure
 
 import (
 	"net/http"
@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"task_manager/Domain"
+	"task_manager/domain"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -42,7 +42,7 @@ func (suite *AuthMiddlewareTestSuite) setupTestRouter() *gin.Engine {
 func (suite *AuthMiddlewareTestSuite) TestAuthMiddlewareSuite() {
 	suite.Run("ValidToken", func() {
 		// Create a valid JWT token
-		user := &Domain.User{
+		user := &domain.User{
 			ID:       "user123",
 			Username: "testuser",
 			Email:    "test@example.com",
@@ -169,7 +169,7 @@ func (suite *AuthMiddlewareTestSuite) TestAuthMiddlewareSuite() {
 
 	suite.Run("WrongSecret", func() {
 		// Create a token with wrong secret
-		user := &Domain.User{
+		user := &domain.User{
 			ID:       "user123",
 			Username: "testuser",
 			Email:    "test@example.com",
@@ -201,7 +201,7 @@ func (suite *AuthMiddlewareTestSuite) TestAuthMiddlewareSuite() {
 func (suite *AuthMiddlewareTestSuite) TestAdminOnlySuite() {
 	suite.Run("ValidAdminUser", func() {
 		// Create a valid admin JWT token
-		user := &Domain.User{
+		user := &domain.User{
 			ID:       "admin123",
 			Username: "adminuser",
 			Email:    "admin@example.com",
@@ -230,7 +230,7 @@ func (suite *AuthMiddlewareTestSuite) TestAdminOnlySuite() {
 
 	suite.Run("RegularUser", func() {
 		// Create a valid user JWT token (not admin)
-		user := &Domain.User{
+		user := &domain.User{
 			ID:       "user123",
 			Username: "testuser",
 			Email:    "test@example.com",
@@ -278,14 +278,14 @@ func (suite *AuthMiddlewareTestSuite) TestAdminOnlySuite() {
 func (suite *AuthMiddlewareTestSuite) TestAuthMiddlewareIntegrationSuite() {
 	suite.Run("IntegrationScenarios", func() {
 		// Create tokens for different user types
-		adminUser := &Domain.User{
+		adminUser := &domain.User{
 			ID:       "admin123",
 			Username: "adminuser",
 			Email:    "admin@example.com",
 			Role:     "admin",
 		}
 		
-		regularUser := &Domain.User{
+		regularUser := &domain.User{
 			ID:       "user123",
 			Username: "testuser",
 			Email:    "test@example.com",

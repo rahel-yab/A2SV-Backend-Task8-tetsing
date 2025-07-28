@@ -1,8 +1,8 @@
-package Repositories
+package repositories
 
 import (
 	"context"
-	"task_manager/Domain"
+	"task_manager/domain"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -19,7 +19,7 @@ type UserDAO struct {
 	Role     string `bson:"role"`
 }
 
-func userToDAO(user *Domain.User) *UserDAO {
+func userToDAO(user *domain.User) *UserDAO {
 	return &UserDAO{
 		Username: user.Username,
 		Email:    user.Email,
@@ -28,8 +28,8 @@ func userToDAO(user *Domain.User) *UserDAO {
 	}
 }
 
-func daoToUser(dao *UserDAO) *Domain.User {
-	return &Domain.User{
+func daoToUser(dao *UserDAO) *domain.User {
+	return &domain.User{
 		Username: dao.Username,
 		Email:    dao.Email,
 		Password: dao.Password,
@@ -41,20 +41,20 @@ type mongoUserRepository struct {
 	collection *mongo.Collection
 }
 
-func NewUserRepository(client *mongo.Client) Domain.IUserRepository {
+func NewUserRepository(client *mongo.Client) domain.IUserRepository {
 	db := client.Database("task_manager")
 	return &mongoUserRepository{
 		collection: db.Collection("users"),
 	}
 }
 
-func (r *mongoUserRepository) AddUser(ctx context.Context, user *Domain.User) error {
+func (r *mongoUserRepository) AddUser(ctx context.Context, user *domain.User) error {
     dao := userToDAO(user)
     _, err := r.collection.InsertOne(ctx, dao)
     return err
 }
 
-func (r *mongoUserRepository) GetUserByEmail(ctx context.Context, email string) (*Domain.User, error) {
+func (r *mongoUserRepository) GetUserByEmail(ctx context.Context, email string) (*domain.User, error) {
 	var dao UserDAO
 	err := r.collection.FindOne(ctx, bson.M{"email": email}).Decode(&dao)
 	if err != nil {
@@ -63,7 +63,7 @@ func (r *mongoUserRepository) GetUserByEmail(ctx context.Context, email string) 
 	return daoToUser(&dao), nil
 }
 
-func (r *mongoUserRepository) GetUserByUsername(ctx context.Context, username string) (*Domain.User, error) {
+func (r *mongoUserRepository) GetUserByUsername(ctx context.Context, username string) (*domain.User, error) {
 	var dao UserDAO
 	err := r.collection.FindOne(ctx, bson.M{"username": username}).Decode(&dao)
 	if err != nil {

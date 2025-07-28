@@ -1,14 +1,14 @@
-package Infrastructure
+package infrastructure
 
 import (
-	"task_manager/Domain"
+	"task_manager/domain"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 type passwordService struct{}
 
-func NewPasswordService() Domain.IPasswordService {
+func NewPasswordService() domain.IPasswordService {
 	return &passwordService{}
 }
 

@@ -1,10 +1,10 @@
-package Infrastructure
+package infrastructure
 
 import (
 	"strings"
 	"testing"
 
-	"task_manager/Domain"
+	"task_manager/domain"
 
 	"github.com/stretchr/testify/suite"
 )
@@ -31,7 +31,7 @@ func (suite *JWTServiceTestSuite) SetupTest() {
 func (suite *JWTServiceTestSuite) TestJWTServiceSuite() {
 	suite.Run("GenerateToken_Success", func() {
 		// Arrange
-		user := &Domain.User{
+		user := &domain.User{
 			ID:       "user123",
 			Username: "testuser",
 			Email:    "test@example.com",
@@ -52,7 +52,7 @@ func (suite *JWTServiceTestSuite) TestJWTServiceSuite() {
 	suite.Run("GenerateToken_EmptySecret", func() {
 		// Arrange
 		jwtService := NewJWTService("")
-		user := &Domain.User{
+		user := &domain.User{
 			ID:       "user123",
 			Username: "testuser",
 			Email:    "test@example.com",
@@ -80,7 +80,7 @@ func (suite *JWTServiceTestSuite) TestJWTServiceSuite() {
 
 	suite.Run("GenerateToken_UserWithEmptyFields", func() {
 		// Arrange
-		user := &Domain.User{
+		user := &domain.User{
 			ID:       "",
 			Username: "",
 			Email:    "",
@@ -98,7 +98,7 @@ func (suite *JWTServiceTestSuite) TestJWTServiceSuite() {
 
 	suite.Run("GenerateToken_AdminUser", func() {
 		// Arrange
-		user := &Domain.User{
+		user := &domain.User{
 			ID:       "admin123",
 			Username: "adminuser",
 			Email:    "admin@example.com",
@@ -121,7 +121,7 @@ func (suite *JWTServiceTestSuite) TestJWTServiceIntegrationSuite() {
 		// Arrange
 		jwtService1 := NewJWTService("secret1")
 		jwtService2 := NewJWTService("secret2")
-		user := &Domain.User{
+		user := &domain.User{
 			ID:       "user123",
 			Username: "testuser",
 			Email:    "test@example.com",
@@ -141,7 +141,7 @@ func (suite *JWTServiceTestSuite) TestJWTServiceIntegrationSuite() {
 	})
 
 	suite.Run("Integration_WithVariousUsers", func() {
-		users := []*Domain.User{
+		users := []*domain.User{
 			{
 				ID:       "user1",
 				Username: "user1",

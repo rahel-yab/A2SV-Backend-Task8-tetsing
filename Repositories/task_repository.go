@@ -1,8 +1,8 @@
-package Repositories
+package repositories
 
 import (
 	"context"
-	"task_manager/Domain"
+	"task_manager/domain"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -19,7 +19,7 @@ type TaskDAO struct {
 	Status      string    `bson:"status"`
 }
 
-func taskToDAO(task *Domain.Task) *TaskDAO {
+func taskToDAO(task *domain.Task) *TaskDAO {
 	return &TaskDAO{
 		ID:          task.ID,
 		Title:       task.Title,
@@ -29,8 +29,8 @@ func taskToDAO(task *Domain.Task) *TaskDAO {
 	}
 }
 
-func daoToTask(dao *TaskDAO) *Domain.Task {
-	return &Domain.Task{
+func daoToTask(dao *TaskDAO) *domain.Task {
+	return &domain.Task{
 		ID:          dao.ID,
 		Title:       dao.Title,
 		Description: dao.Description,
@@ -43,20 +43,20 @@ type mongoTaskRepository struct {
 	collection *mongo.Collection
 }
 
-func NewTaskRepository(client *mongo.Client) Domain.ITaskRepository {
+func NewTaskRepository(client *mongo.Client) domain.ITaskRepository {
 	db := client.Database("task_manager")
 	return &mongoTaskRepository{
 		collection: db.Collection("tasks"),
 	}
 }
 
-func (r *mongoTaskRepository) AddTask(ctx context.Context, task *Domain.Task) error {
+func (r *mongoTaskRepository) AddTask(ctx context.Context, task *domain.Task) error {
 	dao := taskToDAO(task)
 	_, err := r.collection.InsertOne(ctx, dao)
 	return err
 }
 
-func (r *mongoTaskRepository) GetAllTasks(ctx context.Context) ([]Domain.Task, error) {
+func (r *mongoTaskRepository) GetAllTasks(ctx context.Context) ([]domain.Task, error) {
 	cursor, err := r.collection.Find(ctx, bson.M{})
 	if err != nil {
 		return nil, err
@@ -65,14 +65,14 @@ func (r *mongoTaskRepository) GetAllTasks(ctx context.Context) ([]Domain.Task, e
 	if err := cursor.All(ctx, &daos); err != nil {
 		return nil, err
 	}
-	tasks := make([]Domain.Task, len(daos))
+	tasks := make([]domain.Task, len(daos))
 	for i, dao := range daos {
 		tasks[i] = *daoToTask(&dao)
 	}
 	return tasks, nil
 }
 
-func (r *mongoTaskRepository) GetTaskByID(ctx context.Context, id string) (*Domain.Task, error) {
+func (r *mongoTaskRepository) GetTaskByID(ctx context.Context, id string) (*domain.Task, error) {
 	var dao TaskDAO
 	err := r.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&dao)
 	if err != nil {
@@ -81,7 +81,7 @@ func (r *mongoTaskRepository) GetTaskByID(ctx context.Context, id string) (*Doma
 	return daoToTask(&dao), nil
 }
 
-func (r *mongoTaskRepository) UpdateTask(ctx context.Context, task *Domain.Task) error {
+func (r *mongoTaskRepository) UpdateTask(ctx context.Context, task *domain.Task) error {
 	filter := bson.M{"_id": task.ID}
 	update := bson.M{"$set": taskToDAO(task)}
 	_, err := r.collection.UpdateOne(ctx, filter, update)

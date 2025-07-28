@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	Controllers "task_manager/Delivery/Controllers"
+	Controllers "task_manager/Delivery/controllers"
 	routers "task_manager/Delivery/routers"
 	Infrastructure "task_manager/Infrastructure"
 	Repositories "task_manager/Repositories"

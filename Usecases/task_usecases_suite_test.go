@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"task_manager/Domain"
+	"task_manager/domain"
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
@@ -17,25 +17,25 @@ type MockTaskRepository struct {
 	mock.Mock
 }
 
-func (m *MockTaskRepository) AddTask(ctx context.Context, task *Domain.Task) error {
+func (m *MockTaskRepository) AddTask(ctx context.Context, task *domain.Task) error {
 	args := m.Called(ctx, task)
 	return args.Error(0)
 }
 
-func (m *MockTaskRepository) GetAllTasks(ctx context.Context) ([]Domain.Task, error) {
+func (m *MockTaskRepository) GetAllTasks(ctx context.Context) ([]domain.Task, error) {
 	args := m.Called(ctx)
-	return args.Get(0).([]Domain.Task), args.Error(1)
+	return args.Get(0).([]domain.Task), args.Error(1)
 }
 
-func (m *MockTaskRepository) GetTaskByID(ctx context.Context, id string) (*Domain.Task, error) {
+func (m *MockTaskRepository) GetTaskByID(ctx context.Context, id string) (*domain.Task, error) {
 	args := m.Called(ctx, id)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).(*Domain.Task), args.Error(1)
+	return args.Get(0).(*domain.Task), args.Error(1)
 }
 
-func (m *MockTaskRepository) UpdateTask(ctx context.Context, task *Domain.Task) error {
+func (m *MockTaskRepository) UpdateTask(ctx context.Context, task *domain.Task) error {
 	args := m.Called(ctx, task)
 	return args.Error(0)
 }
@@ -72,7 +72,7 @@ func (suite *TaskUsecaseTestSuite) TearDownTest() {
 // TestCreateTaskSuite tests the Create method
 func (suite *TaskUsecaseTestSuite) TestCreateTaskSuite() {
 	suite.Run("Success", func() {
-		task := &Domain.Task{
+		task := &domain.Task{
 			ID:          "task123",
 			Title:       "Test Task",
 			Description: "Test Description",
@@ -95,7 +95,7 @@ func (suite *TaskUsecaseTestSuite) TestCreateTaskSuite() {
 	})
 
 	suite.Run("EmptyTitle", func() {
-		task := &Domain.Task{
+		task := &domain.Task{
 			ID:          "task123",
 			Title:       "", // Empty title
 			Description: "Test Description",
@@ -110,7 +110,7 @@ func (suite *TaskUsecaseTestSuite) TestCreateTaskSuite() {
 	})
 
 	suite.Run("EmptyDescription", func() {
-		task := &Domain.Task{
+		task := &domain.Task{
 			ID:          "task123",
 			Title:       "Test Task",
 			Description: "", // Empty description
@@ -125,7 +125,7 @@ func (suite *TaskUsecaseTestSuite) TestCreateTaskSuite() {
 	})
 
 	suite.Run("EmptyStatus", func() {
-		task := &Domain.Task{
+		task := &domain.Task{
 			ID:          "task123",
 			Title:       "Test Task",
 			Description: "Test Description",
@@ -140,7 +140,7 @@ func (suite *TaskUsecaseTestSuite) TestCreateTaskSuite() {
 	})
 
 	suite.Run("ZeroDueDate", func() {
-		task := &Domain.Task{
+		task := &domain.Task{
 			ID:          "task123",
 			Title:       "Test Task",
 			Description: "Test Description",
@@ -155,7 +155,7 @@ func (suite *TaskUsecaseTestSuite) TestCreateTaskSuite() {
 	})
 
 	suite.Run("InvalidStatus", func() {
-		task := &Domain.Task{
+		task := &domain.Task{
 			ID:          "task123",
 			Title:       "Test Task",
 			Description: "Test Description",
@@ -174,7 +174,7 @@ func (suite *TaskUsecaseTestSuite) TestCreateTaskSuite() {
 
 		for _, status := range validStatuses {
 			suite.Run("Status_"+status, func() {
-				task := &Domain.Task{
+				task := &domain.Task{
 					ID:          "task123",
 					Title:       "Test Task",
 					Description: "Test Description",
@@ -195,7 +195,7 @@ func (suite *TaskUsecaseTestSuite) TestCreateTaskSuite() {
 // TestGetAllTasksSuite tests the GetAllTasks method
 func (suite *TaskUsecaseTestSuite) TestGetAllTasksSuite() {
 	suite.Run("Success", func() {
-		expectedTasks := []Domain.Task{
+		expectedTasks := []domain.Task{
 			{
 				ID:          "task1",
 				Title:       "Task 1",
@@ -227,7 +227,7 @@ func (suite *TaskUsecaseTestSuite) TestGetAllTasksSuite() {
 		usecase := NewTaskUsecase(mockRepo, 5*time.Second)
 		
 		expectedError := errors.New("database connection failed")
-		mockRepo.On("GetAllTasks", mock.AnythingOfType("*context.timerCtx")).Return([]Domain.Task{}, expectedError)
+		mockRepo.On("GetAllTasks", mock.AnythingOfType("*context.timerCtx")).Return([]domain.Task{}, expectedError)
 
 		tasks, err := usecase.GetAllTasks(suite.ctx)
 
@@ -241,7 +241,7 @@ func (suite *TaskUsecaseTestSuite) TestGetAllTasksSuite() {
 // TestGetTaskByIDSuite tests the GetTaskByID method
 func (suite *TaskUsecaseTestSuite) TestGetTaskByIDSuite() {
 	suite.Run("Success", func() {
-		expectedTask := &Domain.Task{
+		expectedTask := &domain.Task{
 			ID:          "task123",
 			Title:       "Test Task",
 			Description: "Test Description",
@@ -280,7 +280,7 @@ func (suite *TaskUsecaseTestSuite) TestGetTaskByIDSuite() {
 // TestUpdateTaskSuite tests the UpdateTask method
 func (suite *TaskUsecaseTestSuite) TestUpdateTaskSuite() {
 	suite.Run("Success", func() {
-		task := &Domain.Task{
+		task := &domain.Task{
 			ID:          "task123",
 			Title:       "Updated Task",
 			Description: "Updated Description",
@@ -303,7 +303,7 @@ func (suite *TaskUsecaseTestSuite) TestUpdateTaskSuite() {
 	})
 
 	suite.Run("EmptyID", func() {
-		task := &Domain.Task{
+		task := &domain.Task{
 			ID:          "", // Empty ID
 			Title:       "Updated Task",
 			Description: "Updated Description",
@@ -318,7 +318,7 @@ func (suite *TaskUsecaseTestSuite) TestUpdateTaskSuite() {
 	})
 
 	suite.Run("EmptyTitle", func() {
-		task := &Domain.Task{
+		task := &domain.Task{
 			ID:          "task123",
 			Title:       "", // Empty title
 			Description: "Updated Description",
@@ -337,7 +337,7 @@ func (suite *TaskUsecaseTestSuite) TestUpdateTaskSuite() {
 		mockRepo := new(MockTaskRepository)
 		usecase := NewTaskUsecase(mockRepo, 5*time.Second)
 		
-		task := &Domain.Task{
+		task := &domain.Task{
 			ID:          "task123",
 			Title:       "Updated Task",
 			Description: "Updated Description",
@@ -390,7 +390,7 @@ func (suite *TaskUsecaseTestSuite) TestContextTimeoutSuite() {
 		// Create usecase with very short timeout
 		usecase := NewTaskUsecase(suite.mockRepo, 1*time.Millisecond)
 
-		task := &Domain.Task{
+		task := &domain.Task{
 			ID:          "task123",
 			Title:       "Test Task",
 			Description: "Test Description",
