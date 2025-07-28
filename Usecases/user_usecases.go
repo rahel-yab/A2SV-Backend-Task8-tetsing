@@ -3,6 +3,7 @@ package Usecases
 import (
 	"context"
 	"errors"
+	"strings"
 	"task_manager/Domain"
 	"time"
 )
@@ -24,6 +25,25 @@ func NewUserUsecase(userRepository Domain.IUserRepository, passwordService Domai
 }
 
 func (uu *UserUsecase) RegisterUser(ctx context.Context, username, email, password string) (string, error) {
+	// Validate input parameters
+	if username == "" {
+		return "", errors.New("username is required")
+	}
+	if email == "" {
+		return "", errors.New("email is required")
+	}
+	if password == "" {
+		return "", errors.New("password is required")
+	}
+	if len(password) < 6 {
+		return "", errors.New("password must be at least 6 characters long")
+	}
+	
+	// Basic email validation
+	if !strings.Contains(email, "@") {
+		return "", errors.New("invalid email format")
+	}
+	
 	c, cancel := context.WithTimeout(ctx, uu.contextTimeout)
 	defer cancel()
 	if exists, _ := uu.userRepository.UserExistsByEmail(c, email); exists {
@@ -54,6 +74,14 @@ func (uu *UserUsecase) RegisterUser(ctx context.Context, username, email, passwo
 }
 
 func (uu *UserUsecase) LoginUser(ctx context.Context, usernameOrEmail, password string) (string, string, error) {
+	// Validate input parameters
+	if usernameOrEmail == "" {
+		return "", "", errors.New("username or email is required")
+	}
+	if password == "" {
+		return "", "", errors.New("password is required")
+	}
+	
 	c, cancel := context.WithTimeout(ctx, uu.contextTimeout)
 	defer cancel()
 	var user *Domain.User
@@ -75,6 +103,11 @@ func (uu *UserUsecase) LoginUser(ctx context.Context, usernameOrEmail, password 
 }
 
 func (uu *UserUsecase) PromoteUserToAdmin(ctx context.Context, identifier string) error {
+	// Validate input parameters
+	if identifier == "" {
+		return errors.New("identifier is required")
+	}
+	
 	c, cancel := context.WithTimeout(ctx, uu.contextTimeout)
 	defer cancel()
 	return uu.userRepository.PromoteUserToAdmin(c, identifier)
