@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"net/http"
-	"task_manager/Usecases"
+	"task_manager/usecases"
 	"task_manager/domain"
 	"time"
 
@@ -72,11 +72,11 @@ func toTaskDTO(task *domain.Task) *TaskDTO {
 
 // UserController handles user-related HTTP requests.
 type UserController struct {
-    userUsecase *Usecases.UserUsecase
+    userUsecase *usecases.UserUsecase
 }
 
 // NewUserController creates a new UserController.
-func NewUserController(userUsecase *Usecases.UserUsecase) *UserController {
+func NewUserController(userUsecase *usecases.UserUsecase) *UserController {
     return &UserController{userUsecase: userUsecase}
 }
 
@@ -133,11 +133,11 @@ func (ctrl *UserController) PromoteUser(c *gin.Context) {
 
 // TaskController handles task-related HTTP requests.
 type TaskController struct {
-    taskUsecase *Usecases.TaskUsecase
+    taskUsecase *usecases.TaskUsecase
 }
 
 // NewTaskController creates a new TaskController.
-func NewTaskController(taskUsecase *Usecases.TaskUsecase) *TaskController {
+func NewTaskController(taskUsecase *usecases.TaskUsecase) *TaskController {
     return &TaskController{taskUsecase: taskUsecase}
 }
 

@@ -6,11 +6,11 @@ import (
 	"os"
 	"time"
 
-	Controllers "task_manager/Delivery/controllers"
-	routers "task_manager/Delivery/routers"
-	Infrastructure "task_manager/Infrastructure"
-	Repositories "task_manager/Repositories"
-	Usecases "task_manager/Usecases"
+	controllers "task_manager/delivery/controllers"
+	routers "task_manager/delivery/routers"
+	infrastructure "task_manager/infrastructure"
+	repositories "task_manager/repositories"
+	usecases "task_manager/usecases"
 
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -35,24 +35,24 @@ func main() {
 	}
 
 	// Repositories (pass only client)
-	userRepo := Repositories.NewUserRepository(client)
-	taskRepo := Repositories.NewTaskRepository(client)
+	userRepo := repositories.NewUserRepository(client)
+	taskRepo := repositories.NewTaskRepository(client)
 
 	// Services
-	passwordService := Infrastructure.NewPasswordService()
+	passwordService := infrastructure.NewPasswordService()
 	 jwtSecret := []byte(os.Getenv("JWT_SECRET"))
    if len(jwtSecret) == 0 {
        log.Fatal("JWT_SECRET is not set in environment")
    }
-	jwtService := Infrastructure.NewJWTService(string(jwtSecret))
+	jwtService := infrastructure.NewJWTService(string(jwtSecret))
 
 	// Usecases
-	userUsecase := Usecases.NewUserUsecase(userRepo, passwordService, jwtService, 5*time.Second)
-	taskUsecase := Usecases.NewTaskUsecase(taskRepo, 5*time.Second)
+	userUsecase := usecases.NewUserUsecase(userRepo, passwordService, jwtService, 5*time.Second)
+	taskUsecase := usecases.NewTaskUsecase(taskRepo, 5*time.Second)
 
 	// Controllers
-	userController := Controllers.NewUserController(userUsecase)
-	taskController := Controllers.NewTaskController(taskUsecase)
+	userController := controllers.NewUserController(userUsecase)
+	taskController := controllers.NewTaskController(taskUsecase)
 
 	// Router
 	router := routers.SetupRouter(userController, taskController, jwtSecret)
