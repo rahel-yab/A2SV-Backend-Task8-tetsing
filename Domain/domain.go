@@ -1,9 +1,8 @@
 package Domain
 
 import (
-	"time"
-
 	"context"
+	"time"
 )
 
 type User struct {
