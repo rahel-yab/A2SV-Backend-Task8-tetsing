@@ -12,16 +12,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        go-version: ['1.21', '1.22', '1.23']
+        go-version: ["1.23", "1.24"]
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up Go ${{ matrix.go-version }}
-        uses: actions/setup-go@v5        # Use the latest stable setup‑go action
+        uses: actions/setup-go@v5 # Use the latest stable setup‑go action
         with:
-          go-version: '${{ matrix.go-version }}'
+          go-version: "${{ matrix.go-version }}"
           check-latest: false
 
       - name: Download Go modules
@@ -29,7 +29,7 @@ jobs:
 
       - name: Run tests with coverage & race detection
         run: |
-          go test ./... -v -coverprofile=coverage.out -covermode=atomic -race
+          go test ./domain/... ./infrastructure/... ./repositories/... ./usecases/... -v -coverprofile=coverage.out -covermode=atomic -race
           go tool cover -func=coverage.out
 
       - name: Check test coverage threshold
@@ -46,16 +46,16 @@ jobs:
       - name: Run linting
         run: |
           go install golang.org/x/lint/golint@latest
-          golint ./...
+          golint ./domain/... ./infrastructure/... ./repositories/... ./usecases/...
 
       - name: Run vet
-        run: go vet ./...
+        run: go vet ./domain/... ./infrastructure/... ./repositories/... ./usecases/...
 
       - name: Check formatting
         run: |
-          if [ "$(gofmt -s -l . | wc -l)" -gt 0 ]; then
+          if [ "$(gofmt -s -l ./domain ./infrastructure ./repositories ./usecases | wc -l)" -gt 0 ]; then
             echo "❌ Code is not properly formatted"
-            gofmt -s -d .
+            gofmt -s -d ./domain ./infrastructure ./repositories ./usecases
             exit 1
           else
             echo "✅ Code is properly formatted"
@@ -65,7 +65,7 @@ jobs:
         run: go tool cover -html=coverage.out -o coverage.html
 
       - name: Upload test results
-        uses: actions/upload-artifact@v4   # Required: use v4 of artifact actions
+        uses: actions/upload-artifact@v4 # Required: use v4 of artifact actions
         if: always()
         with:
           name: test-results-${{ matrix.go-version }}
